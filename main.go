@@ -3,6 +3,8 @@ package main
 import (
 	"os"
 	"os/exec"
+	"strconv"
+	"time"
 )
 
 func main() {
@@ -11,16 +13,33 @@ func main() {
 
 	upstream := "https://github.com/openset/forked-sync.git"
 
-	exec.Command("git", "clone", origin).Start()
+	tempDir := os.TempDir()
 
-	os.Chdir("forked-sync")
+	os.Chdir(tempDir)
 
-	exec.Command("git", "remote", "add", "upstream", upstream).Start()
+	println(tempDir)
 
-	exec.Command("git", "pull", "upstream").Start()
+	timestamp := time.Now().Unix()
 
-	exec.Command("git", "merge", "upstream/master").Start()
+	tempFolder := "tmp_" + strconv.Itoa(int(timestamp))
 
-	exec.Command("git", "push", "origin").Start()
+	println(tempFolder)
+
+	exec.Command("git", "clone", origin, tempFolder).Run()
+
+	os.Chdir(tempFolder)
+
+	//git remote add upstream https://github.com/openset/forked-sync.git
+	exec.Command("git", "remote", "add", "upstream", upstream).Run()
+
+	exec.Command("git", "pull", "upstream").Run()
+
+	exec.Command("git", "merge", "upstream/master").Run()
+
+	exec.Command("git", "push", "origin").Run()
+
+	println(tempDir + tempFolder)
+
+	os.RemoveAll(tempDir + tempFolder)
 
 }
