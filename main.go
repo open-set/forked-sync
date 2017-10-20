@@ -1,6 +1,9 @@
 package main
 
-import "os/exec"
+import (
+	"os"
+	"os/exec"
+)
 
 func main() {
 
@@ -10,19 +13,13 @@ func main() {
 
 	exec.Command("git", "clone", origin).Start()
 
-	exec.Command("cd", "forked-sync").Start()
+	os.Chdir("forked-sync")
 
-	//git remote add upstream <path/to/original/repo>
-	//
-	//git fetch upstream
-	//
-	//git merge upstream/master master
-	//
-	//git push origin master
-
-	exec.Command("git", "remote", "add", upstream).Start()
+	exec.Command("git", "remote", "add", "upstream", upstream).Start()
 
 	exec.Command("git", "pull", "upstream").Start()
+
+	exec.Command("git", "merge", "upstream/master").Start()
 
 	exec.Command("git", "push", "origin").Start()
 
