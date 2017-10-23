@@ -18,7 +18,7 @@ func main() {
 	mapOrigin := map[string]string{origin: upstream}
 
 	for origin, upstream := range mapOrigin {
-		go sync(origin, upstream)
+		sync(origin, upstream)
 	}
 
 }
