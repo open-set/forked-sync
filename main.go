@@ -1,38 +1,38 @@
 package main
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"os"
 	"os/exec"
-	"path/filepath"
-	"strconv"
-	"time"
 )
 
 func main() {
 
-	done := make(chan bool, 1)
+	//done := make(chan map[string]bool, 8)
 
 	origin := "https://github.com/open-set/forked-sync.git"
 
 	upstream := "https://github.com/openset/forked-sync.git"
 
-	go sync(origin, upstream, done)
+	mapOrigin := map[string]string{origin: upstream}
 
-	<-done
+	for origin, upstream := range mapOrigin {
+		go sync(origin, upstream)
+	}
+
 }
 
 //同步master分支
-func sync(origin, upstream string, done chan<- bool) {
+func sync(origin, upstream string) {
 
 	tempDir := os.TempDir()
 
-	os.Chdir(tempDir)
-
 	println(tempDir)
 
-	timestamp := time.Now().Unix()
+	os.Chdir(tempDir)
 
-	tempFolder := "tmp_" + strconv.Itoa(int(timestamp))
+	tempFolder := getFolderName(origin)
 
 	println(tempFolder)
 
@@ -54,7 +54,28 @@ func sync(origin, upstream string, done chan<- bool) {
 
 	println(tempDir + tempFolder)
 
-	os.RemoveAll(filepath.Join(tempDir, tempFolder))
+	//os.RemoveAll(filepath.Join(tempDir, tempFolder))
 
-	done <- true
+	//done <- map[string]bool{origin: true}
+	println(origin)
+}
+
+//获取MD5值
+func getMD5(str string) string {
+
+	res := md5.Sum([]byte(str))
+
+	return hex.EncodeToString(res[:])
+}
+
+//获取临时文件夹名
+func getFolderName(origin string) string {
+
+	//timestamp := time.Now().Unix()
+
+	//tempFolder := strconv.Itoa(int(timestamp))
+
+	folderMD5 := getMD5(origin)
+
+	return "sync_tmp_" + folderMD5
 }
