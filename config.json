@@ -1,9 +1,13 @@
 {
   "version": "1.0.0",
+  "debug": true,
   "sync_repository": [
     {
       "origin": "https://github.com/open-set/forked-sync.git",
-      "upstream": "https://github.com/openset/forked-sync.git"
+      "upstream": "https://github.com/openset/forked-sync.git",
+      "branch": [
+        "master"
+      ]
     },
     {
       "origin": "https://github.com/open-set/forked-sync.git",
