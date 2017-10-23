@@ -1,6 +1,7 @@
 package main
 
 import (
+	"./config"
 	"crypto/md5"
 	"encoding/hex"
 	"os"
@@ -12,12 +13,7 @@ func main() {
 
 	debug := true
 
-	mapOrigin := [...]map[string]string{
-		{
-			"origin":   "https://github.com/open-set/forked-sync.git",
-			"upstream": "https://github.com/openset/forked-sync.git",
-		},
-	}
+	Conf := config.LoadConfig()
 
 	jobs := make(chan map[string]string, 100)
 
@@ -27,12 +23,12 @@ func main() {
 		go worker(jobs, results, debug)
 	}
 
-	for _, j := range mapOrigin {
+	for _, j := range Conf.SyncRepository {
 		jobs <- j
 	}
 	close(jobs)
 
-	for r := 0; r < len(mapOrigin); r++ {
+	for r := 0; r < len(Conf.SyncRepository); r++ {
 		println(<-results)
 	}
 }

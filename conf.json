@@ -4,10 +4,7 @@
   "sync_repository": [
     {
       "origin": "https://github.com/open-set/forked-sync.git",
-      "upstream": "https://github.com/openset/forked-sync.git",
-      "branch": [
-        "master"
-      ]
+      "upstream": "https://github.com/openset/forked-sync.git"
     },
     {
       "origin": "https://github.com/open-set/forked-sync.git",
