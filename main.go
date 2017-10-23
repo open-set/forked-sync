@@ -3,15 +3,26 @@ package main
 import (
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strconv"
 	"time"
 )
 
 func main() {
 
+	done := make(chan bool)
+
 	origin := "https://github.com/open-set/forked-sync.git"
 
 	upstream := "https://github.com/openset/forked-sync.git"
+
+	go sync(origin, upstream, done)
+
+	<-done
+}
+
+//同步master分支
+func sync(origin, upstream string, done chan bool) {
 
 	tempDir := os.TempDir()
 
@@ -29,6 +40,9 @@ func main() {
 
 	os.Chdir(tempFolder)
 
+	exec.Command("git", "config", "user.name", "Openset").Run()
+	exec.Command("git", "config", "user.email", "openset.wang@gmail.com").Run()
+
 	//git remote add upstream https://github.com/openset/forked-sync.git
 	exec.Command("git", "remote", "add", "upstream", upstream).Run()
 
@@ -40,6 +54,7 @@ func main() {
 
 	println(tempDir + tempFolder)
 
-	os.RemoveAll(tempDir + tempFolder)
+	os.RemoveAll(filepath.Join(tempDir, tempFolder))
 
+	done <- true
 }
