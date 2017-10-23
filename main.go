@@ -10,7 +10,7 @@ import (
 
 func main() {
 
-	done := make(chan bool)
+	done := make(chan bool, 1)
 
 	origin := "https://github.com/open-set/forked-sync.git"
 
@@ -22,7 +22,7 @@ func main() {
 }
 
 //同步master分支
-func sync(origin, upstream string, done chan bool) {
+func sync(origin, upstream string, done chan<- bool) {
 
 	tempDir := os.TempDir()
 
