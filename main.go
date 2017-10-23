@@ -9,18 +9,37 @@ import (
 
 func main() {
 
-	//done := make(chan map[string]bool, 8)
-
-	origin := "https://github.com/open-set/forked-sync.git"
-
-	upstream := "https://github.com/openset/forked-sync.git"
-
-	mapOrigin := map[string]string{origin: upstream}
-
-	for origin, upstream := range mapOrigin {
-		sync(origin, upstream)
+	mapOrigin := [...]map[string]string{
+		{
+			"origin":   "https://github.com/open-set/forked-sync.git",
+			"upstream": "https://github.com/openset/forked-sync.git",
+		},
 	}
 
+	jobs := make(chan map[string]string, 100)
+
+	results := make(chan string, 100)
+
+	for w := 0; w < 8; w++ {
+		go worker(jobs, results)
+	}
+
+	for _, j := range mapOrigin {
+		jobs <- j
+	}
+	close(jobs)
+
+	for r := 0; r < len(mapOrigin); r++ {
+		println(<-results)
+	}
+}
+
+//工作池
+func worker(jobs <-chan map[string]string, results chan<- string) {
+	for j := range jobs {
+		sync(j["origin"], j["upstream"])
+		results <- j["origin"]
+	}
 }
 
 //同步master分支
@@ -56,7 +75,6 @@ func sync(origin, upstream string) {
 
 	//os.RemoveAll(filepath.Join(tempDir, tempFolder))
 
-	//done <- map[string]bool{origin: true}
 	println(origin)
 }
 
